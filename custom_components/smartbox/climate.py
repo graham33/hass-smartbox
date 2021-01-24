@@ -22,12 +22,13 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up platform."""
-    _LOGGER.debug(f"sensor async_setup_platform: {discovery_info}")
+    _LOGGER.debug("Setting up Smartbox climate platform")
     if discovery_info is None:
         return
 
     async_add_entities([SmartboxHeater(node) for node in hass.data[DOMAIN][SMARTBOX_NODES] if node.node_type == 'htr'],
                        True)
+    _LOGGER.debug("Finished setting up Smartbox climate platform")
 
 
 class SmartboxHeater(ClimateEntity):
@@ -130,5 +131,6 @@ class SmartboxHeater(ClimateEntity):
         """Return True if roller and hub is available."""
         return self._node.status['sync_status'] == 'ok'
 
-    def update(self):
-        self._node.update(self.hass)
+    async def async_update(self):
+        _LOGGER.debug("Smartbox climate async_update")
+        await self._node.async_update(self.hass)

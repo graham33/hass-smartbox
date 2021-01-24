@@ -47,6 +47,8 @@ async def async_setup(hass: HomeAssistant, config: dict):
     """Set up the Smartbox component."""
     hass.data.setdefault(DOMAIN, {})
 
+    _LOGGER.debug("Setting up Smartbox integration")
+
     accounts_cfg = config[DOMAIN][CONF_ACCOUNTS]
     _LOGGER.debug(f"accounts: {accounts_cfg}")
     basic_auth_creds = config[DOMAIN][CONF_BASIC_AUTH_CREDS]
@@ -67,6 +69,8 @@ async def async_setup(hass: HomeAssistant, config: dict):
     if hass.data[DOMAIN][SMARTBOX_DEVICES]:
         for component in PLATFORMS:
             await hass.helpers.discovery.async_load_platform(component, DOMAIN, {}, config)
+
+    _LOGGER.debug("Finished setting up Smartbox integration")
 
     return True
 

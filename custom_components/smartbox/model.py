@@ -3,7 +3,7 @@ import logging
 import re
 
 from homeassistant.core import HomeAssistant
-import smartbox
+from smartbox import Session, SocketSession
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -11,7 +11,7 @@ _PATH_RE = re.compile(r'^/([^/]+)/(\d+)/([^/]+)')
 
 
 async def get_devices(hass: HomeAssistant, api_name, basic_auth_creds, username, password):
-    session = await hass.async_add_executor_job(smartbox.Session, api_name, basic_auth_creds, username, password)
+    session = await hass.async_add_executor_job(Session, api_name, basic_auth_creds, username, password)
     session_devices = await hass.async_add_executor_job(session.get_devices)
     # TODO: gather?
     devices = [
@@ -41,12 +41,12 @@ class SmartboxDevice(object):
             node = SmartboxNode(self, node_info, self._session, status)
             self._nodes[(node.node_type, node.addr)] = node
 
-        # start update task
-        asyncio.create_task(self._update_task())
+        _LOGGER.debug(f"Creating SocketSession for device {self._dev_id}")
+        self._socket_session = SocketSession(self._session, self._dev_id, lambda data: self._on_dev_data(data),
+                                             lambda data: self._on_node_update(data))
 
-    async def _update_task(self):
-        await self._session.open_socket(self._dev_id, lambda data: self._on_dev_data(data),
-                                        lambda data: self._on_node_update(data))
+        _LOGGER.debug(f"Starting SocketSession task for device {self._dev_id}")
+        asyncio.create_task(self._socket_session.run())
 
     def _on_dev_data(self, data):
         _LOGGER.debug(f"Received dev_data: {data}")
@@ -114,6 +114,5 @@ class SmartboxNode(object):
     def set_status(self, **status_args):
         self._session.set_status(self._device.dev_id, self._node_info, status_args)
 
-    # TODO: async/remove?
-    def update(self, hass):
-        pass
+    async def async_update(self, hass):
+        _LOGGER.debug("Smartbox node async_update")

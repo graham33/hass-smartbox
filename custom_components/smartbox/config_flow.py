@@ -35,7 +35,7 @@ async def validate_input(hass: core.HomeAssistant, data):
         # to the executor:
         session = await hass.async_add_executor_job(smartbox.Session, data['api_name'], data['basic_auth_creds'],
                                                     data["username"], data["password"])
-    except:
+    except:  # noqa: E722
         # TODO: improve
         # If you cannot connect:
         # throw CannotConnect

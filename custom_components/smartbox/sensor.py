@@ -15,12 +15,14 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up platform."""
-    _LOGGER.debug(f"sensor async_setup_platform: {discovery_info}")
+    _LOGGER.debug("Setting up Smartbox sensor platform")
     if discovery_info is None:
         return
 
     async_add_entities(
         [TemperatureSensor(node) for node in hass.data[DOMAIN][SMARTBOX_NODES] if node.node_type == 'htr'], True)
+
+    _LOGGER.debug("Finished setting up Smartbox sensor platform")
 
 
 class TemperatureSensor(Entity):
@@ -65,8 +67,9 @@ class TemperatureSensor(Entity):
         """Return the name of the sensor."""
         return self._node.name
 
-    def update(self):
-        self._node.update(self.hass)
+    async def async_update(self):
+        _LOGGER.debug("Smartbox sensor async_update")
+        await self._node.async_update(self.hass)
 
 
 # TODO: power sensor?
