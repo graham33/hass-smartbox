@@ -37,13 +37,19 @@ You will need the following items of information:
 * Your username and password used for the mobile app/web app.
 * Your smartbox device ID, which is shows as the 'Device ID Code' under My
   Devices in the Home section of the mobile app/web app.
-* Basic auth credentials: this is an HTTP Basic Auth credential that the mobile
-  app and web app use to do initial authentication with the server. Use the
-  base64 encoded string directly.
+* Basic auth credentials: this is an HTTP Basic Auth credential used to do
+  initial authentication with the server. Use the base64 encoded string
+  directly. See 'Basic Auth Credential' section below for more details.
 
 It's recommended that you store credentials using the built-in [Home Assistant
 secrets management].
 
+### Basic Auth Credential
+Initial authentication to the smartbox REST API is protected by HTTP Basic Auth,
+in addition to the user's username and password which are then used to obtain an
+access token. In order not to undermine the security layer it provides, and also
+because it might change over time or vary between implementations, **the token
+is not provided here and system owners need to find it themselves**.
 
 See [CHANGELOG.md](./CHANGELOG.md) for release notes.
 
