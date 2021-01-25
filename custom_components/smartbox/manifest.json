@@ -4,7 +4,7 @@
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/smartbox",
   "requirements": [
-    "smartbox == 0.0.1"
+    "git+https://github.com/graham33/smartbox.git@main#smartbox==0.0.3"
   ],
   "ssdp": [],
   "zeroconf": [],
