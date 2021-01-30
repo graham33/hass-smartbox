@@ -39,9 +39,6 @@ class SmartboxHeater(ClimateEntity):
     def __init__(self, node):
         """Initialize the sensor."""
         self._node = node
-        # TODO: support presets for eco mode
-        # TODO: boost?
-        # TODO: window?
         self._supported_features = SUPPORT_TARGET_TEMPERATURE | SUPPORT_PRESET_MODE
         _LOGGER.debug(f"Created node {self.name} unique_id={self.unique_id}")
 

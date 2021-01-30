@@ -7,7 +7,9 @@ missing or not fully working!
 
 ## Installation
 This integration uses the [smartbox] Python module, so make sure to install that
-into your Home Assistant python environment first.
+into your Home Assistant python environment first. If you are using hass.io, the
+module should be automatically installed from github via the reference in the
+`manifest.json` file.
 
 Then, install the `custom_components/smartbox` directory in this repo to your
 Home Assistant `custom_components` directory. See the [Home Assistant docs] for
@@ -54,16 +56,15 @@ is not provided here and system owners need to find it themselves**.
 See [CHANGELOG.md](./CHANGELOG.md) for release notes.
 
 ## TODO
-* Packaging (requirements.txt etc.)
 * Tests
 * CI
 * Docs
-* Handle presets (e.g. away and eco)
 * config_flow (only configured via yaml atm)
+* Support device grouping
 * Handle adding and removing entities properly
-* Ensure token refresh is working
 * Graceful cleanup/shutdown of update task
 * Handle node types other than heater
+* Handle other presets/modes (e.g. boost, eco, window)
 
 [Home Assistant docs]: https://developers.home-assistant.io/docs/creating_integration_file_structure
 [Home Assistant secrets management]: https://www.home-assistant.io/docs/configuration/secrets/
