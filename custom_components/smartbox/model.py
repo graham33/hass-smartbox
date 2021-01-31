@@ -7,7 +7,8 @@ from smartbox import Session, SocketSession
 
 _LOGGER = logging.getLogger(__name__)
 
-_PATH_RE = re.compile(r'^/([^/]+)/(\d+)/([^/]+)')
+_AWAY_STATUS_UPDATE_RE = re.compile(r'^/mgr/away_status')
+_NODE_STATUS_UPDATE_RE = re.compile(r'^/([^/]+)/(\d+)/status')
 
 
 async def get_devices(hass: HomeAssistant, api_name, basic_auth_creds, username, password):
@@ -43,33 +44,43 @@ class SmartboxDevice(object):
 
         _LOGGER.debug(f"Creating SocketSession for device {self._dev_id}")
         self._socket_session = SocketSession(self._session, self._dev_id, lambda data: self._on_dev_data(data),
-                                             lambda data: self._on_node_update(data))
+                                             lambda data: self._on_update(data))
 
         _LOGGER.debug(f"Starting SocketSession task for device {self._dev_id}")
         asyncio.create_task(self._socket_session.run())
 
     def _on_dev_data(self, data):
         _LOGGER.debug(f"Received dev_data: {data}")
+        self._away_status_update(data['away_status'])
 
-    def _on_node_update(self, data):
-        _LOGGER.debug(f"Received update: {data}")
-        m = _PATH_RE.match(data['path'])
-        if not m:
-            _LOGGER.error(f"Couldn't match path {data['path']}")
-            return
-        node_type = m.group(1)
-        addr = int(m.group(2))
-        update_type = m.group(3)
+    def _away_status_update(self, away_status):
+        _LOGGER.debug(f"Away status update: {away_status}")
+        # update all nodes
+        for node in self._nodes.values():
+            node.away = away_status['away']
 
-        if update_type == 'status':
-            node_status = data['body']
-            node = self._nodes.get((node_type, addr), None)
-            if node is None:
-                _LOGGER.error(f"Received update for unknown node {node_type} {addr}")
-                return
+    def _node_status_update(self, node_type, addr, node_status):
+        _LOGGER.debug(f"Node status update: {node_status}")
+        node = self._nodes.get((node_type, addr), None)
+        if node is not None:
             node.update_status(node_status)
         else:
-            _LOGGER.warning(f"Received unknown update type {update_type}: {data}")
+            _LOGGER.error(f"Received update for unknown node {node_type} {addr}")
+
+    def _on_update(self, data):
+        _LOGGER.debug(f"Received update: {data}")
+
+        m = _NODE_STATUS_UPDATE_RE.match(data['path'])
+        if m:
+            self._node_status_update(m.group(1), int(m.group(2)), data['body'])
+            return
+
+        m = _AWAY_STATUS_UPDATE_RE.match(data['path'])
+        if m:
+            self._away_status_update(data['body'])
+            return
+
+        _LOGGER.error(f"Couldn't match update {data['path']}")
 
     @property
     def dev_id(self):
@@ -85,6 +96,7 @@ class SmartboxNode(object):
         self._node_info = node_info
         self._session = session
         self._status = status
+        self._away = False
 
     @property
     def node_id(self):
@@ -113,6 +125,15 @@ class SmartboxNode(object):
 
     def set_status(self, **status_args):
         self._session.set_status(self._device.dev_id, self._node_info, status_args)
+
+    @property
+    def away(self):
+        return self._away
+
+    @away.setter
+    def away(self, away):
+        _LOGGER.debug(f"Updating node {self.name} away status: {away}")
+        self._away = away
 
     async def async_update(self, hass):
         _LOGGER.debug("Smartbox node async_update")
