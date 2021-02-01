@@ -102,7 +102,8 @@ class SmartboxHeater(ClimateEntity):
         elif mode == 'auto':
             return HVAC_MODE_AUTO
         else:
-            raise ValueError(f"Unknown mode {mode}")
+            _LOGGER.error(f"Unknown smartbox node mode {mode}")
+            raise ValueError(f"Unknown smartbox node mode {mode}")
 
     @property
     def hvac_mode(self):
@@ -114,7 +115,9 @@ class SmartboxHeater(ClimateEntity):
     @property
     def hvac_modes(self):
         """Return the list of available operation modes."""
-        return [HVAC_MODE_HEAT, HVAC_MODE_AUTO, HVAC_MODE_OFF]
+        hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO, HVAC_MODE_OFF]
+        _LOGGER.debug(f"Returning supported HVAC modes {hvac_modes}")
+        return hvac_modes
 
     def set_hvac_mode(self, hvac_mode):
         """Set operation mode."""
@@ -147,11 +150,6 @@ class SmartboxHeater(ClimateEntity):
         }
         _LOGGER.debug(f"Device state attributes: {attrs}")
         return attrs
-
-    @property
-    def state(self):
-        """Return the state of the sensor."""
-        return self._node.status['mtemp']
 
     @property
     def available(self) -> bool:
