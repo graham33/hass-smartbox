@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.0.4 (alpha)
+
+### Features
+* Add power sensor
+* Implement away preset
+* Update to smartbox 0.0.5
+
+### Bugfixes
+* Fix state returned by climate entity
+  * This was accidentally overridden to return temp rather than default (HVAC
+    mode)
+  * This primarily caused the current HVAC mode to not be highlighted in the UI,
+    but might also impact automations
+
 ## 0.0.3 (alpha)
 
 ### Features
