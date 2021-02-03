@@ -1,6 +1,7 @@
 {
   "domain": "smartbox",
   "name": "Smartbox",
+  "version": "0.0.4",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/smartbox",
   "requirements": [

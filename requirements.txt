@@ -1,1 +1,1 @@
-smartbox>=0.0.5
+smartbox==0.0.5
