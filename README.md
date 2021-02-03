@@ -1,4 +1,4 @@
-# hass-smartbox
+# hass-smartbox ![hassfest](https://github.com/graham33/hass-smartbox/workflows/Validate%20with%20hassfest/badge.svg)
 Home Assistant integration for heating smartboxes.
 
 
