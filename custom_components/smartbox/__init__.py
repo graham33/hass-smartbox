@@ -7,19 +7,11 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, SMARTBOX_NODES
+from .const import DOMAIN, CONF_ACCOUNTS, CONF_API_NAME, CONF_BASIC_AUTH_CREDS, CONF_DEVICE_IDS, CONF_PASSWORD, CONF_USERNAME, SMARTBOX_DEVICES, SMARTBOX_NODES, SMARTBOX_SESSIONS
 from .model import get_devices
 
 _LOGGER = logging.getLogger(__name__)
 
-CONF_ACCOUNTS = 'accounts'
-CONF_API_NAME = 'api_name'
-CONF_BASIC_AUTH_CREDS = 'basic_auth_creds'
-CONF_DEVICE_IDS = 'device_ids'
-CONF_PASSWORD = 'password'
-CONF_USERNAME = 'username'
-SMARTBOX_DEVICES = 'smartbox_devices'
-SMARTBOX_SESSIONS = 'smartbox_sessions'
 
 DEVICE_IDS_SCHEMA = vol.Schema([cv.string])
 
