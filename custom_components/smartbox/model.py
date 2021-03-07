@@ -55,14 +55,14 @@ class SmartboxDevice(object):
         self._socket_session = SocketSession(
             self._session,
             self._dev_id,
-            lambda data: self._on_dev_data(data),
-            lambda data: self._on_update(data),
+            lambda data: self.on_dev_data(data),
+            lambda data: self.on_update(data),
         )
 
         _LOGGER.debug(f"Starting SocketSession task for device {self._dev_id}")
         asyncio.create_task(self._socket_session.run())
 
-    def _on_dev_data(self, data):
+    def on_dev_data(self, data):
         _LOGGER.debug(f"Received dev_data: {data}")
         self._away_status_update(data["away_status"])
 
@@ -80,7 +80,7 @@ class SmartboxDevice(object):
         else:
             _LOGGER.error(f"Received update for unknown node {node_type} {addr}")
 
-    def _on_update(self, data):
+    def on_update(self, data):
         _LOGGER.debug(f"Received update: {data}")
 
         m = _NODE_STATUS_UPDATE_RE.match(data["path"])
@@ -113,6 +113,7 @@ class SmartboxNode(object):
 
     @property
     def node_id(self):
+        # TODO: are addrs only unique among node types, or for the whole device?
         return f"{self._device.dev_id}-{self._node_info['addr']}"
 
     @property

@@ -40,6 +40,33 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     _LOGGER.debug("Finished setting up Smartbox climate platform")
 
 
+def mode_to_hvac_mode(mode):
+    if mode == "off":
+        return HVAC_MODE_OFF
+    elif mode == "manual":
+        return HVAC_MODE_HEAT
+    elif mode == "auto":
+        return HVAC_MODE_AUTO
+    else:
+        _LOGGER.error(f"Unknown smartbox node mode {mode}")
+        raise ValueError(f"Unknown smartbox node mode {mode}")
+
+
+def hvac_mode_to_mode(hvac_mode):
+    if hvac_mode == HVAC_MODE_OFF:
+        return "off"
+    elif hvac_mode == HVAC_MODE_HEAT:
+        return "manual"
+    elif hvac_mode == HVAC_MODE_AUTO:
+        return "auto"
+    else:
+        raise ValueError(f"Unsupported hvac mode {hvac_mode}")
+
+
+def status_to_hvac_action(status):
+    return CURRENT_HVAC_HEAT if status["active"] else CURRENT_HVAC_IDLE
+
+
 class SmartboxHeater(ClimateEntity):
     """Smartbox heater climate control"""
 
@@ -94,25 +121,14 @@ class SmartboxHeater(ClimateEntity):
     @property
     def hvac_action(self):
         """Return current operation ie. heat or idle."""
-        action = CURRENT_HVAC_HEAT if self._node.status["active"] else CURRENT_HVAC_IDLE
+        action = status_to_hvac_action(self._node.status)
         _LOGGER.debug(f"Current HVAC action for {self.name}: {action}")
         return action
-
-    def _mode_to_hvac_mode(self, mode):
-        if mode == "off":
-            return HVAC_MODE_OFF
-        elif mode == "manual":
-            return HVAC_MODE_HEAT
-        elif mode == "auto":
-            return HVAC_MODE_AUTO
-        else:
-            _LOGGER.error(f"Unknown smartbox node mode {mode}")
-            raise ValueError(f"Unknown smartbox node mode {mode}")
 
     @property
     def hvac_mode(self):
         """Return hvac target hvac state."""
-        hvac_mode = self._mode_to_hvac_mode(self._node.status["mode"])
+        hvac_mode = mode_to_hvac_mode(self._node.status["mode"])
         _LOGGER.debug(
             f"Returning HVAC mode for {self.name}: {hvac_mode} from mode {self._node.status['mode']}"
         )
@@ -127,14 +143,8 @@ class SmartboxHeater(ClimateEntity):
 
     def set_hvac_mode(self, hvac_mode):
         """Set operation mode."""
-        if hvac_mode == HVAC_MODE_OFF:
-            self._node.set_status(mode="off")
-        elif hvac_mode == HVAC_MODE_HEAT:
-            self._node.set_status(mode="manual")
-        elif hvac_mode == HVAC_MODE_AUTO:
-            self._node.set_status(mode="auto")
-        else:
-            raise ValueError(f"Unsupported mode {hvac_mode}")
+        _LOGGER.debug(f"Setting HVAC mode to {hvac_mode}")
+        self._node.set_status(mode=hvac_mode_to_mode(hvac_mode))
 
     @property
     def preset_mode(self):

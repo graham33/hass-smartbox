@@ -17,7 +17,6 @@ from .const import (
     CONF_USERNAME,
     SMARTBOX_DEVICES,
     SMARTBOX_NODES,
-    SMARTBOX_SESSIONS,
 )
 from .model import get_devices
 
@@ -92,6 +91,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
 
     for device in hass.data[DOMAIN][SMARTBOX_DEVICES]:
         nodes = device.get_nodes()
+        _LOGGER.debug(f"Configuring nodes for device {device.dev_id} {nodes}")
         hass.data[DOMAIN][SMARTBOX_NODES].extend(nodes)
 
     if hass.data[DOMAIN][SMARTBOX_DEVICES]:
