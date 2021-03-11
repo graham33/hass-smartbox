@@ -52,7 +52,21 @@ async def async_setup(hass: HomeAssistant, config: dict):
     for account in accounts_cfg:
         devices = await get_devices(hass, account[CONF_API_NAME], basic_auth_creds, account[CONF_USERNAME],
                                     account[CONF_PASSWORD])
-        hass.data[DOMAIN][SMARTBOX_DEVICES].extend(devices)
+
+        found_dev_ids = frozenset(dev.dev_id for dev in devices)
+        for dev_id in found_dev_ids.difference(account[CONF_DEVICE_IDS]):
+            _LOGGER.warning(f"Found device {dev_id} which was not configured - ignoring")
+
+        for device in devices:
+            if device.dev_id in account[CONF_DEVICE_IDS]:
+                _LOGGER.info(f"Setting up configured device {device.dev_id}")
+                hass.data[DOMAIN][SMARTBOX_DEVICES].append(device)
+
+        setup_dev_ids = frozenset(dev.dev_id for dev in hass.data[DOMAIN][SMARTBOX_DEVICES])
+        for dev_id in frozenset(account[CONF_DEVICE_IDS]) - setup_dev_ids:
+            _LOGGER.error(f"Configured device {dev_id} was not found")
+
+
 
     for device in hass.data[DOMAIN][SMARTBOX_DEVICES]:
         nodes = device.get_nodes()
