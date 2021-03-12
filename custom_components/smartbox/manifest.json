@@ -1,17 +1,15 @@
 {
-  "domain": "smartbox",
-  "name": "Smartbox",
-  "version": "0.0.4",
-  "config_flow": true,
-  "documentation": "https://www.home-assistant.io/integrations/smartbox",
-  "requirements": [
-    "git+https://github.com/graham33/smartbox.git@main#smartbox==0.0.5"
-  ],
-  "ssdp": [],
-  "zeroconf": [],
-  "homekit": {},
-  "dependencies": [],
-  "codeowners": [
-    "@graham33"
-  ]
+    "domain": "smartbox",
+    "name": "Smartbox",
+    "documentation": "https://github.com/graham33/hass-smartbox",
+    "issue_tracker": "https://github.com/graham33/hass-smartbox/issues",
+    "dependencies": [],
+    "version": "0.0.4",
+    "config_flow": false,
+    "codeowners": [
+        "@graham33"
+    ],
+    "requirements": [
+        "git+https://github.com/graham33/smartbox.git@main#smartbox==0.0.5"
+    ]
 }
