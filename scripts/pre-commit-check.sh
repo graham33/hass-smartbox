@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+set -eu
+
 function manifest_version() {
     sed -n -e 's/^.*"version": "\([0-9\.]\+\)".*$/\1/p' custom_components/smartbox/manifest.json
 }
@@ -27,3 +29,5 @@ then
     echo "Manifest smartbox version does not match requirements smartbox version" >&2
     exit 1
 fi
+
+black --check .

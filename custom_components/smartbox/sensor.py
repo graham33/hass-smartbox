@@ -22,9 +22,21 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         return
 
     async_add_entities(
-        [TemperatureSensor(node) for node in hass.data[DOMAIN][SMARTBOX_NODES] if node.node_type == 'htr'], True)
-    async_add_entities([PowerSensor(node) for node in hass.data[DOMAIN][SMARTBOX_NODES] if node.node_type == 'htr'],
-                       True)
+        [
+            TemperatureSensor(node)
+            for node in hass.data[DOMAIN][SMARTBOX_NODES]
+            if node.node_type == "htr"
+        ],
+        True,
+    )
+    async_add_entities(
+        [
+            PowerSensor(node)
+            for node in hass.data[DOMAIN][SMARTBOX_NODES]
+            if node.node_type == "htr"
+        ],
+        True,
+    )
 
     _LOGGER.debug("Finished setting up Smartbox sensor platform")
 
@@ -41,12 +53,12 @@ class SmartboxSensorBase(Entity):
     @property
     def device_state_attributes(self):
         return {
-            ATTR_LOCKED: self._node.status['locked'],
+            ATTR_LOCKED: self._node.status["locked"],
         }
 
     @property
     def available(self) -> bool:
-        return self._node.status['sync_status'] == 'ok'
+        return self._node.status["sync_status"] == "ok"
 
     async def async_update(self):
         _LOGGER.debug("Smartbox sensor async_update")
@@ -67,11 +79,11 @@ class TemperatureSensor(SmartboxSensorBase):
 
     @property
     def state(self):
-        return self._node.status['mtemp']
+        return self._node.status["mtemp"]
 
     @property
     def unit_of_measurement(self):
-        return TEMP_CELSIUS if self._node.status['units'] == 'C' else TEMP_FAHRENHEIT
+        return TEMP_CELSIUS if self._node.status["units"] == "C" else TEMP_FAHRENHEIT
 
 
 class PowerSensor(SmartboxSensorBase):
@@ -91,7 +103,7 @@ class PowerSensor(SmartboxSensorBase):
         # TODO: is this correct? The heater seems to report power usage all the
         # time otherwise, which doesn't make sense and doesn't tally with the
         # graphs in the vendor app UI
-        return self._node.status['power'] if self._node.status['active'] else 0
+        return self._node.status["power"] if self._node.status["active"] else 0
 
     @property
     def unit_of_measurement(self):
