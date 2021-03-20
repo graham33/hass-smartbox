@@ -15,6 +15,7 @@ let
     pytest-randomly
     pytest-sugar
     smartbox
+    tox
   ]);
 in mkShell {
   buildInputs = [
