@@ -57,9 +57,6 @@ is not provided here and system owners need to find it themselves**.
 See [CHANGELOG.md](./CHANGELOG.md) for release notes.
 
 ## TODO
-* Tests
-* CI
-* Docs
 * config_flow (only configured via yaml atm)
 * Support device grouping
 * Handle adding and removing entities properly
