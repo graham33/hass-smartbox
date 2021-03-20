@@ -48,6 +48,7 @@ _LOGGER = logging.getLogger(__name__)
 def test_mode_to_hvac_mode():
     assert mode_to_hvac_mode("off") == HVAC_MODE_OFF
     assert mode_to_hvac_mode("auto") == HVAC_MODE_AUTO
+    assert mode_to_hvac_mode("modified_auto") == HVAC_MODE_AUTO
     assert mode_to_hvac_mode("manual") == HVAC_MODE_HEAT
     with pytest.raises(ValueError):
         mode_to_hvac_mode("blah")

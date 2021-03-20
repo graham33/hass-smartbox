@@ -36,7 +36,7 @@ def mock_node(dev_id, addr):
         "locked": False,
         "active": random.choice([True, False]),
         "power": random.random() * 1000,
-        "mode": "auto",
+        "mode": random.choice(["off", "manual", "auto", "modified_auto"]),
     }
     node.async_update = AsyncMock()
     return node

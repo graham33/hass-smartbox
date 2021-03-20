@@ -47,6 +47,10 @@ def mode_to_hvac_mode(mode):
         return HVAC_MODE_HEAT
     elif mode == "auto":
         return HVAC_MODE_AUTO
+    elif mode == "modified_auto":
+        # This occurs when the temperature is modified while in auto mode.
+        # Mapping it to auto seems to make this most sense
+        return HVAC_MODE_AUTO
     else:
         _LOGGER.error(f"Unknown smartbox node mode {mode}")
         raise ValueError(f"Unknown smartbox node mode {mode}")
