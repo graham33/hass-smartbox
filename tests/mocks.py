@@ -38,7 +38,7 @@ def mock_node(dev_id, addr):
         "power": random.random() * 1000,
         "mode": random.choice(["off", "manual", "auto", "modified_auto"]),
     }
-    node.async_update = AsyncMock()
+    node.async_update = AsyncMock(return_value=node.status)
     return node
 
 
@@ -161,14 +161,31 @@ class MockSmartbox(object):
     def generate_socket_status_update(self, mock_device, mock_node, status_updates):
         dev_id = mock_device["dev_id"]
         addr = mock_node["addr"]
-        socket = self.sockets[dev_id]
         self._socket_node_status[dev_id][addr].update(status_updates)
+        self._send_socket_update(dev_id, addr)
+        return self._socket_node_status[dev_id][addr]
+
+    def generate_socket_random_status(self, mock_device, mock_node):
+        dev_id = mock_device["dev_id"]
+        addr = mock_node["addr"]
+        self._socket_node_status[dev_id][addr] = self._mock_smartbox_node_status()
+        self._send_socket_update(dev_id, addr)
+        return self._socket_node_status[dev_id][addr]
+
+    def generate_socket_node_unavailable(self, mock_device, mock_node):
+        dev_id = mock_device["dev_id"]
+        addr = mock_node["addr"]
+        self._socket_node_status[dev_id][addr] = {"sync_status": "lost"}
+        self._send_socket_update(dev_id, addr)
+        return self._socket_node_status[dev_id][addr]
+
+    def _send_socket_update(self, dev_id, addr):
+        socket = self.sockets[dev_id]
+        node_type = self._node_info[dev_id][addr - 1]["type"]
         socket.on_update(
             {
-                "path": f"/{mock_node['type']}/{mock_node['addr']}/status",
-                "body": self._get_socket_status(
-                    mock_device["dev_id"], mock_node["addr"]
-                ),
+                "path": f"/{node_type}/{addr}/status",
+                "body": self._get_socket_status(dev_id, addr),
             }
         )
 

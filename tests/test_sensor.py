@@ -58,13 +58,19 @@ async def test_basic_temp(hass, mock_smartbox):
             _check_temp_state(hass, mock_node_status, new_state)
 
             # test unavailable
-            mock_smartbox.generate_socket_status_update(
-                mock_device, mock_node, {"sync_status": "disconnected"}
+            mock_node_status = mock_smartbox.generate_socket_node_unavailable(
+                mock_device, mock_node
             )
-
             await hass.helpers.entity_component.async_update_entity(entity_id)
             state = hass.states.get(entity_id)
             assert state.state == STATE_UNAVAILABLE
+
+            mock_node_status = mock_smartbox.generate_socket_random_status(
+                mock_device, mock_node
+            )
+            await hass.helpers.entity_component.async_update_entity(entity_id)
+            state = hass.states.get(entity_id)
+            assert state.state != STATE_UNAVAILABLE
 
 
 async def test_basic_power(hass, mock_smartbox):
@@ -111,3 +117,18 @@ async def test_basic_power(hass, mock_smartbox):
                 mock_device["dev_id"], mock_node
             )
             assert float(state.state) == 0
+
+            # test unavailable
+            mock_node_status = mock_smartbox.generate_socket_node_unavailable(
+                mock_device, mock_node
+            )
+            await hass.helpers.entity_component.async_update_entity(entity_id)
+            state = hass.states.get(entity_id)
+            assert state.state == STATE_UNAVAILABLE
+
+            mock_node_status = mock_smartbox.generate_socket_random_status(
+                mock_device, mock_node
+            )
+            await hass.helpers.entity_component.async_update_entity(entity_id)
+            state = hass.states.get(entity_id)
+            assert state.state != STATE_UNAVAILABLE

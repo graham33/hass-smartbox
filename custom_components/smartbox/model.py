@@ -151,3 +151,4 @@ class SmartboxNode(object):
 
     async def async_update(self, hass):
         _LOGGER.debug("Smartbox node async_update")
+        return self._status

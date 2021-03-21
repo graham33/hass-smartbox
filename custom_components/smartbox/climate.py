@@ -77,6 +77,8 @@ class SmartboxHeater(ClimateEntity):
     def __init__(self, node):
         """Initialize the sensor."""
         self._node = node
+        self._status = {}
+        self._available = True
         self._supported_features = SUPPORT_TARGET_TEMPERATURE | SUPPORT_PRESET_MODE
         _LOGGER.debug(f"Created node {self.name} unique_id={self.unique_id}")
 
@@ -104,37 +106,37 @@ class SmartboxHeater(ClimateEntity):
     @property
     def temperature_unit(self):
         """Return the unit of measurement."""
-        return TEMP_CELSIUS if self._node.status["units"] == "C" else TEMP_FAHRENHEIT
+        return TEMP_CELSIUS if self._status["units"] == "C" else TEMP_FAHRENHEIT
 
     @property
     def current_temperature(self):
         """Return the current temperature."""
-        return float(self._node.status["mtemp"])
+        return float(self._status["mtemp"])
 
     @property
     def target_temperature(self):
         """Return the target temperature."""
-        return float(self._node.status["stemp"])
+        return float(self._status["stemp"])
 
     def set_temperature(self, **kwargs):
         """Set new target temperature."""
         temp = kwargs.get(ATTR_TEMPERATURE)
         if temp is not None:
-            self._node.set_status(stemp=str(temp), units=self._node.status["units"])
+            self._node.set_status(stemp=str(temp), units=self._status["units"])
 
     @property
     def hvac_action(self):
         """Return current operation ie. heat or idle."""
-        action = status_to_hvac_action(self._node.status)
+        action = status_to_hvac_action(self._status)
         _LOGGER.debug(f"Current HVAC action for {self.name}: {action}")
         return action
 
     @property
     def hvac_mode(self):
         """Return hvac target hvac state."""
-        hvac_mode = mode_to_hvac_mode(self._node.status["mode"])
+        hvac_mode = mode_to_hvac_mode(self._status["mode"])
         _LOGGER.debug(
-            f"Returning HVAC mode for {self.name}: {hvac_mode} from mode {self._node.status['mode']}"
+            f"Returning HVAC mode for {self.name}: {hvac_mode} from mode {self._status['mode']}"
         )
         return hvac_mode
 
@@ -166,7 +168,7 @@ class SmartboxHeater(ClimateEntity):
     def device_state_attributes(self):
         """Return the state attributes of the device."""
         attrs = {
-            ATTR_LOCKED: self._node.status["locked"],
+            ATTR_LOCKED: self._status["locked"],
         }
         _LOGGER.debug(f"Device state attributes: {attrs}")
         return attrs
@@ -174,8 +176,16 @@ class SmartboxHeater(ClimateEntity):
     @property
     def available(self) -> bool:
         """Return True if roller and hub is available."""
-        return self._node.status["sync_status"] == "ok"
+        return self._available
 
     async def async_update(self):
         _LOGGER.debug("Smartbox climate async_update")
-        await self._node.async_update(self.hass)
+        new_status = await self._node.async_update(self.hass)
+        # new_status = self._node.status
+        _LOGGER.info(f"NEW STATUS {new_status}")
+        if new_status["sync_status"] == "ok":
+            # update our status
+            self._status = new_status
+            self._available = True
+        else:
+            self._available = False

@@ -44,6 +44,8 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 class SmartboxSensorBase(Entity):
     def __init__(self, node):
         self._node = node
+        self._status = {}
+        self._available = True
         _LOGGER.debug(f"Created node {self.name} unique_id={self.unique_id}")
 
     @property
@@ -53,16 +55,23 @@ class SmartboxSensorBase(Entity):
     @property
     def device_state_attributes(self):
         return {
-            ATTR_LOCKED: self._node.status["locked"],
+            ATTR_LOCKED: self._status["locked"],
         }
 
     @property
     def available(self) -> bool:
-        return self._node.status["sync_status"] == "ok"
+        return self._available
 
     async def async_update(self):
         _LOGGER.debug("Smartbox sensor async_update")
         await self._node.async_update(self.hass)
+        new_status = self._node.status
+        if new_status["sync_status"] == "ok":
+            # update our status
+            self._status = new_status
+            self._available = True
+        else:
+            self._available = False
 
 
 class TemperatureSensor(SmartboxSensorBase):
@@ -79,11 +88,11 @@ class TemperatureSensor(SmartboxSensorBase):
 
     @property
     def state(self):
-        return self._node.status["mtemp"]
+        return self._status["mtemp"]
 
     @property
     def unit_of_measurement(self):
-        return TEMP_CELSIUS if self._node.status["units"] == "C" else TEMP_FAHRENHEIT
+        return TEMP_CELSIUS if self._status["units"] == "C" else TEMP_FAHRENHEIT
 
 
 class PowerSensor(SmartboxSensorBase):
@@ -103,7 +112,7 @@ class PowerSensor(SmartboxSensorBase):
         # TODO: is this correct? The heater seems to report power usage all the
         # time otherwise, which doesn't make sense and doesn't tally with the
         # graphs in the vendor app UI
-        return self._node.status["power"] if self._node.status["active"] else 0
+        return self._status["power"] if self._status["active"] else 0
 
     @property
     def unit_of_measurement(self):

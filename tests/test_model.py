@@ -203,5 +203,5 @@ async def test_smartbox_node(hass):
     node.away = True
     assert node.away
 
-    # TODO: currently unused
-    await node.async_update(hass)
+    status_update = await node.async_update(hass)
+    assert status_update == node.status

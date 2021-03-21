@@ -30,6 +30,7 @@ async def test_setup_basic(hass):
         return_value=[mock_dev_1],
     ) as get_devices_mock:
         assert await async_setup_component(hass, "smartbox", MOCK_CONFIG_1)
+        await hass.async_block_till_done()
         get_devices_mock.assert_any_await(
             hass,
             MOCK_CONFIG_1[DOMAIN][CONF_ACCOUNTS][0][CONF_API_NAME],
