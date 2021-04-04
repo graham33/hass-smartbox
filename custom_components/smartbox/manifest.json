@@ -4,7 +4,7 @@
     "documentation": "https://github.com/graham33/hass-smartbox",
     "issue_tracker": "https://github.com/graham33/hass-smartbox/issues",
     "dependencies": [],
-    "version": "0.0.4",
+    "version": "0.1.0",
     "config_flow": false,
     "codeowners": [
         "@graham33"
