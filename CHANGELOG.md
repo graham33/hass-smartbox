@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.1.0 (alpha)
+
+### Bug Fixes
+* Fix status handling on node unavailable
+
+### Features
+* Add initial tests, minor refactorings
+* Add `requirements.txt`
+* Add initial tests using pytest-homeassistant-custom-component
+* Reformat with black and add CI check
+* Add codecov
+* Improve custom component manifest
+* Support `modified_auto` mode (mapped to HVAC_MODE_AUTO)
+
+### Breaking Changes
+* Upgrade to smartbox 0.1.0
+  * The API name parameter must now be `api-foo` where it was previously `foo`
+    (to connect to `api-foo.xxxx`). This allows some devices which connect to
+    `api.xxx` to work.
+* Only add configured devices (previously all were added). Report errors if
+  configured devices are missing, warnings if extra devices are found.
+
 ## 0.0.4 (alpha)
 
 ### Features
