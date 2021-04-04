@@ -34,8 +34,9 @@ smartbox:
 
 You will need the following items of information:
 * The API name for your heater vendor. This is visible in the 'API Host' entry
-  in the 'Version' menu item in the mobile app/web app. If the API Host is
-  `api-foo.xxxx`, use `foo` as the value for this setting.
+  in the 'Version' menu item in the mobile app/web app. If the host name is of
+  the form `api-foo.xxxx` or `api.xxxx` use the values `api-foo` or `api`
+  respectively.
 * Your username and password used for the mobile app/web app.
 * Your smartbox device ID, which is shows as the 'Device ID Code' under My
   Devices in the Home section of the mobile app/web app.

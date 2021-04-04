@@ -1,2 +1,2 @@
-git+https://github.com/graham33/smartbox.git@main#smartbox==0.0.5
+git+https://github.com/graham33/smartbox.git@main#smartbox==0.1.0
 homeassistant
