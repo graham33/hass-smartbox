@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 (alpha)
+
+### Features
+* Throw errors for unsupported node types
+* Add support for htr_mod node type (treating the same as htr)
+
 ## 0.1.0 (alpha)
 
 ### Bug Fixes
