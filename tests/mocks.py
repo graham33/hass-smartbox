@@ -97,8 +97,7 @@ class MockSmartbox(object):
         return {
             "addr": addr,
             "name": f"Test node {dev_id} {addr}",
-            # TODO: other node types
-            "type": "htr",
+            "type": random.choice(["htr", "htr_mod"]),
         }
 
     def _mock_smartbox_node_status(self):
@@ -181,7 +180,7 @@ class MockSmartbox(object):
 
     def _send_socket_update(self, dev_id, addr):
         socket = self.sockets[dev_id]
-        node_type = self._node_info[dev_id][addr - 1]["type"]
+        node_type = self._node_info[dev_id][addr]["type"]
         socket.on_update(
             {
                 "path": f"/{node_type}/{addr}/status",
