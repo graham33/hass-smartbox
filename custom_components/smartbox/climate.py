@@ -19,6 +19,7 @@ from homeassistant.components.climate.const import (
 )
 
 from .const import DOMAIN, SMARTBOX_NODES
+from .model import is_heater_node
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         [
             SmartboxHeater(node)
             for node in hass.data[DOMAIN][SMARTBOX_NODES]
-            if node.node_type == "htr"
+            if is_heater_node(node)
         ],
         True,
     )

@@ -23,9 +23,9 @@ def mock_device(dev_id, nodes):
     return dev
 
 
-def mock_node(dev_id, addr):
+def mock_node(dev_id, addr, node_type="htr"):
     node = MagicMock()
-    node.node_type = "htr"
+    node.node_type = node_type
     node.name = f"node_{addr}"
     node.node_id = f"{dev_id}-{addr}"
     node.status = {

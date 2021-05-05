@@ -18,7 +18,7 @@ from .const import (
     SMARTBOX_DEVICES,
     SMARTBOX_NODES,
 )
-from .model import get_devices
+from .model import get_devices, is_supported_node
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -92,6 +92,12 @@ async def async_setup(hass: HomeAssistant, config: dict):
     for device in hass.data[DOMAIN][SMARTBOX_DEVICES]:
         nodes = device.get_nodes()
         _LOGGER.debug(f"Configuring nodes for device {device.dev_id} {nodes}")
+        for node in nodes:
+            if not is_supported_node(node):
+                _LOGGER.error(
+                    f'Nodes of type "{node.node_type}" are not yet supported; '
+                    "no entities will be created. Please file an issue on GitHub."
+                )
         hass.data[DOMAIN][SMARTBOX_NODES].extend(nodes)
 
     if hass.data[DOMAIN][SMARTBOX_DEVICES]:

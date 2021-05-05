@@ -16,11 +16,13 @@ from custom_components.smartbox.const import (
 from custom_components.smartbox.model import (
     create_smartbox_device,
     get_devices,
+    is_heater_node,
+    is_supported_node,
     SmartboxDevice,
     SmartboxNode,
 )
 
-from .mocks import mock_device
+from .mocks import mock_device, mock_node
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -205,3 +207,19 @@ async def test_smartbox_node(hass):
 
     status_update = await node.async_update(hass)
     assert status_update == node.status
+
+
+def test_is_heater_node():
+    dev_id = "test_device_id_1"
+    addr = 1
+    assert is_heater_node(mock_node(dev_id, addr, "htr"))
+    assert not is_heater_node(mock_node(dev_id, addr, "thm"))
+    assert not is_heater_node(mock_node(dev_id, addr, "sldkfjsd"))
+
+
+def test_is_supported_node():
+    dev_id = "test_device_id_1"
+    addr = 1
+    assert is_supported_node(mock_node(dev_id, addr, "htr"))
+    assert not is_supported_node(mock_node(dev_id, addr, "thm"))
+    assert not is_supported_node(mock_node(dev_id, addr, "oijijr"))

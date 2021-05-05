@@ -122,3 +122,30 @@ async def test_setup_missing_and_extra_devices(hass, caplog):
         logging.WARNING,
         f"Found device {dev_3_id} which was not configured - ignoring",
     ) in caplog.record_tuples
+
+
+async def test_setup_unsupported_nodes(hass, caplog):
+    dev_1_id = "test_device_id_1"
+    mock_node_1 = mock_node(dev_1_id, 1, "htr")
+    mock_node_2 = mock_node(dev_1_id, 2, "test_unsupported_node")
+    mock_dev_1 = mock_device(dev_1_id, [mock_node_1, mock_node_2])
+
+    with patch(
+        "custom_components.smartbox.get_devices",
+        autospec=True,
+        return_value=[mock_dev_1],
+    ) as get_devices_mock:
+        assert await async_setup_component(hass, "smartbox", MOCK_CONFIG_1)
+        get_devices_mock.assert_any_await(
+            hass,
+            MOCK_CONFIG_1[DOMAIN][CONF_ACCOUNTS][0][CONF_API_NAME],
+            MOCK_CONFIG_1[DOMAIN][CONF_BASIC_AUTH_CREDS],
+            MOCK_CONFIG_1[DOMAIN][CONF_ACCOUNTS][0][CONF_USERNAME],
+            MOCK_CONFIG_1[DOMAIN][CONF_ACCOUNTS][0][CONF_PASSWORD],
+        )
+    assert (
+        "custom_components.smartbox",
+        logging.ERROR,
+        'Nodes of type "test_unsupported_node" are not yet supported; '
+        "no entities will be created. Please file an issue on GitHub.",
+    ) in caplog.record_tuples

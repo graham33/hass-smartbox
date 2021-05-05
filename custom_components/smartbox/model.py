@@ -9,6 +9,16 @@ _LOGGER = logging.getLogger(__name__)
 
 _AWAY_STATUS_UPDATE_RE = re.compile(r"^/mgr/away_status")
 _NODE_STATUS_UPDATE_RE = re.compile(r"^/([^/]+)/(\d+)/status")
+_HEATER_NODE_TYPES = ["htr"]
+
+
+def is_heater_node(node):
+    return node.node_type in _HEATER_NODE_TYPES
+
+
+def is_supported_node(node):
+    # TODO: add support for 'thm' (thermostat) nodes
+    return is_heater_node(node)
 
 
 async def get_devices(
